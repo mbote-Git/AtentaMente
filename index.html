@@ -211,12 +211,18 @@
     obtenerDatosDesdeServidor();
   </script>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('https://script.google.com/macros/s/AKfycbzsvEFZpeOVU_bl94WxApSAfVCRrZHcQJW6pZ6BH3Jy/dev?file=sw')
-        .then(reg => console.log('Service Worker registrado', reg))
-        .catch(err => console.error('Error registrando el SW', err));
-    }
+<script>
+function obtenerDatos() {
+  google.script.run
+    .withSuccessHandler(mostrarDatos) // Función para manejar la respuesta
+    .obtenerDatos(); // Llama a la función en Apps Script
+}
+
+function mostrarDatos(datos) {
+  // Procesa los datos recibidos desde Apps Script
+  console.log(datos);
+}
 </script>
+  
 </body>
 </html>
