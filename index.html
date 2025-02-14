@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>AtentaMente Cloud Access</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #D9D9D9;
+      color: #000000;
+    }
+
+    #contenedor-principal {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #cabecera {
+      background-color: #19626f;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      color: #ffffff;
+      width: 100%;
+    }
+
+    #cabecera img {
+      max-height: 120px;
+      width: auto;
+      margin-right: 8px;
+    }
+
+    #cabecera span {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    #contenido {
+      flex-grow: 1;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #19626f;
+      margin-top: 40px;
+      margin-bottom: 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .lista-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      list-style: none;
+      padding: 0;
+    }
+
+    .lista-pacientes {
+      display: block;
+      list-style: none;
+      padding: 0;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background-color: #ffffff;
+      color: #19626f;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .chip:hover {
+      background-color: #e0e0e0;
+      transform: scale(1.05);
+    }
+
+    .lista-pacientes li {
+      margin-bottom: 10px;
+    }
+
+    #mensaje-carga {
+      font-size: 16px;
+      color: #333;
+    }
+
+    #mensaje-error {
+      color: red;
+      display: none;
+      font-weight: bold;
+    }
+
+    #reintentar {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #19626f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #reintentar:hover {
+      background-color: #144d58;
+    }
+  </style>
+</head>
+<body>
+  <div id="contenedor-principal">
+    <div id="cabecera">
+      <img src="https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png" alt="Logo">
+      <span>AtentaMente Cloud Access</span>
+    </div>
+
+    <div id="contenido">
+      <div id="mensaje-carga">Cargando datos...</div>
+      <div id="mensaje-error"></div>
+      <button id="reintentar" onclick="obtenerDatosDesdeServidor()">Reintentar</button>
+
+      <div id="contenedor-documentos" style="display: none;">
+        <h2>Documentación Personal & Horarios</h2>
+        <ul id="lista-documentos" class="lista-links"></ul>
+      </div>
+
+      <div id="contenedor-pacientes" style="display: none;">
+        <h2>Mis Pacientes</h2>
+        <ul id="lista-pacientes" class="lista-pacientes"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function mostrarDatos(data) {
+      const mensajeCarga = document.getElementById('mensaje-carga');
+      const mensajeError = document.getElementById('mensaje-error');
+      const reintentarBtn = document.getElementById('reintentar');
+      const contenedorDocumentos = document.getElementById('contenedor-documentos');
+      const contenedorPacientes = document.getElementById('contenedor-pacientes');
+      const listaDocumentos = document.getElementById('lista-documentos');
+      const listaPacientes = document.getElementById('lista-pacientes');
+
+      mensajeCarga.style.display = 'none';
+      mensajeError.style.display = 'none';
+      reintentarBtn.style.display = 'none';
+
+      if (data.documentos && data.documentos.length > 0) {
+        listaDocumentos.innerHTML = '';
+        data.documentos.forEach(item => {
+          const chip = crearChip(item.nombre, item.id);
+          listaDocumentos.appendChild(chip);
+        });
+        contenedorDocumentos.style.display = 'block';
+      }
+
+      if (data.pacientes && data.pacientes.length > 0) {
+        listaPacientes.innerHTML = '';
+        data.pacientes.forEach(item => {
+          const listItem = document.createElement('li');
+          const chip = crearChip(item.nombre, item.id);
+          listItem.appendChild(chip);
+          listaPacientes.appendChild(listItem);
+        });
+        contenedorPacientes.style.display = 'block';
+      }
+    }
+
+    function crearChip(nombre, id) {
+      const chip = document.createElement('a');
+      const url = new URL("https://drive.google.com/drive/folders/" + id);
+      chip.href = url.toString();
+      chip.className = 'chip';
+      chip.target = '_blank';
+      chip.textContent = nombre;
+      return chip;
+    }
+
+    function mostrarError(error) {
+      console.error("Error:", error);
+      const mensajeError = document.getElementById('mensaje-error');
+      mensajeError.textContent = "Error: " + error;
+      mensajeError.style.display = 'block';
+      document.getElementById('mensaje-carga').style.display = 'none';
+      document.getElementById('reintentar').style.display = 'block';
+    }
+
+    function obtenerDatosDesdeServidor() {
+      google.script.run
+        .withSuccessHandler(respuesta => {
+          if (respuesta.success) {
+            mostrarDatos(respuesta);
+          } else {
+            mostrarError(respuesta.error);
+          }
+        })
+        .withFailureHandler(mostrarError)
+        .obtenerDatos();
+    }
+
+    obtenerDatosDesdeServidor();
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('https://script.google.com/macros/s/AKfycbzsvEFZpeOVU_bl94WxApSAfVCRrZHcQJW6pZ6BH3Jy/dev?file=sw')
+        .then(reg => console.log('Service Worker registrado', reg))
+        .catch(err => console.error('Error registrando el SW', err));
+    }
+</script>
+</body>
+</html>
