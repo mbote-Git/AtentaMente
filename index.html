@@ -235,5 +235,44 @@ function doGet() {
     return HtmlService.createHtmlOutput('Error al cargar la página.'); // Manejo de errores
   }
 } 
+<input type="email" id="emailInput" placeholder="Ingrese su email">
+<button onclick="buscarCarpetas()">Buscar</button>
+<div id="resultado"></div>
+<script>
+  function buscarCarpetas() {
+    var email = document.getElementById("emailInput").value;
+    if (!email) {
+      alert("Ingrese un email válido.");
+      return;
+    }
+
+    document.getElementById("resultado").innerHTML = "Cargando...";
+
+    google.script.run
+      .withSuccessHandler(mostrarResultados)
+      .withFailureHandler(mostrarError)
+      .obtenerCarpetasPorEmailJS(email);
+  }
+
+  function mostrarResultados(data) {
+    if (data.length === 0) {
+      document.getElementById("resultado").innerHTML = "No se encontraron carpetas.";
+      return;
+    }
+
+    let lista = "<ul>";
+    data.forEach(item => {
+      lista += `<li><a href="https://drive.google.com/drive/folders/${item.id}" target="_blank">${item.nombre}</a></li>`;
+    });
+    lista += "</ul>";
+    document.getElementById("resultado").innerHTML = lista;
+  }
+
+  function mostrarError(error) {
+    document.getElementById("resultado").innerHTML = "Error al obtener datos.";
+    console.error(error);
+  }
+</script>
+
 </body>
 </html>
