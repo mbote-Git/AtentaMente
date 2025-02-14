@@ -1,0 +1,55 @@
+function serveManifest() {
+  var manifest = {
+    "name": "AtentaMente Cloud Access",
+    "short_name": "AtentaMente",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#19626f",
+    "icons": [
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "72x72",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "96x96",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "128x128",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "152x152",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "384x384",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.postimg.cc/NFGK2Q1B/CEREBRO-invertido.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  };
+
+  return ContentService.createTextOutput(JSON.stringify(manifest))
+    .setMimeType("application/manifest+json");
+}
