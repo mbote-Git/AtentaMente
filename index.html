@@ -223,6 +223,17 @@ function mostrarDatos(datos) {
   console.log(datos);
 }
 </script>
-  
+function doGet() {
+  const url = 'https://mbote-git.github.io/AtentaMente/index.html'; // URL de tu index.html en GitHub Pages
+
+  try {
+    const response = UrlFetchApp.fetch(url);
+    const html = response.getContentText();
+    return HtmlService.createHtmlOutput(html);
+  } catch (error) {
+    Logger.log('Error al obtener el archivo index.html: ' + error);
+    return HtmlService.createHtmlOutput('Error al cargar la página.'); // Manejo de errores
+  }
+} 
 </body>
 </html>
